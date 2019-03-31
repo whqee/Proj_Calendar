@@ -1,7 +1,6 @@
 #include <common.h>
 #include <lcd1602.h>
 #include <ds1302.h>
-#include <stdio.h>
 
 sbit KEY0 = P3^2;
 sbit KEY1 = P3^3;
@@ -37,7 +36,7 @@ void main()
 			goto Set_Time;
 		
 		ds1302_read_time(time_now);
-		printf_time();
+		print_time();
 	}
 	while(1)
 	{

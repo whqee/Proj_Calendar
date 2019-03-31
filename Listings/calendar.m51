@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    03/31/2019  12:37:54  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    03/31/2019  13:57:34  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
@@ -59,7 +59,7 @@ LINK MAP OF MODULE:  .\Objects\calendar (?C_STARTUP)
             CODE    0AC7H     000EH     UNIT         ?CO?DS1302
             CODE    0AD5H     000DH     UNIT         ?C_INITSEG
 
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 2
 
 
 
@@ -77,6 +77,7 @@ SEGMENT                                   DATA_GROUP
 ?PR?MAIN?MAIN                           -----    -----
   +--> ?PR?LCD1602_INIT?LCD1602
   +--> ?PR?_DS1302_READ_TIME?DS1302
+  +--> ?PR?PRINT_TIME?MAIN
   +--> ?PR?_LCD1602_SHOW_STR?LCD1602
   +--> ?PR?DELAY_50MS?MAIN
   +--> ?PR?_DS1302_SET_TIME?DS1302
@@ -94,6 +95,10 @@ SEGMENT                                   DATA_GROUP
 ?PR?_DS1302_READ_TIME?DS1302            0020H    0004H
   +--> ?CO?DS1302
   +--> ?PR?_DS1302_READ_REG?DS1302
+
+?PR?PRINT_TIME?MAIN                     -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?_LCD1602_SHOW_STR?LCD1602
 
 ?PR?_LCD1602_SHOW_STR?LCD1602           0020H    0006H
   +--> ?PR?_LCD1602_SET_CURSOR?LCD1602
@@ -114,12 +119,7 @@ SEGMENT                                   DATA_GROUP
 ?PR?KEY_LINE?MAIN                       -----    -----
   +--> ?PR?DELAY_50MS?MAIN
 
-
-
-UNRESOLVED EXTERNAL SYMBOLS:
-   PRINTF_TIME
-
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 3
 
 
 
@@ -179,7 +179,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
   C:0AB5H         SYMBOL        _lcd1602_write_cmd
   B:00A0H.7       PUBLIC        lcd1602_E
   C:0A10H         SYMBOL        delay5ms
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 4
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 4
 
 
   C:0A8BH         PUBLIC        _lcd1602_set_cursor
@@ -239,7 +239,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
   -------         ENDPROC       _LCD1602_WRITE_DATA
   -------         PROC          LCD1602_INIT
   C:0A2FH         LINE#         56
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 5
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 5
 
 
   C:0A2FH         LINE#         57
@@ -299,7 +299,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
   C:095CH         LINE#         104
   C:0967H         LINE#         105
   C:0970H         LINE#         106
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 6
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 6
 
 
   C:0970H         LINE#         107
@@ -359,7 +359,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
   C:09E7H         LINE#         25
   C:09EEH         LINE#         26
   C:0A0AH         LINE#         27
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 7
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 7
 
 
   -------         ENDPROC       _DS1302_READ_TIME
@@ -419,7 +419,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
   C:0885H         LINE#         93
   C:0887H         LINE#         94
   C:0888H         LINE#         96
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 8
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 8
 
 
   C:088AH         LINE#         97
@@ -479,7 +479,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
   D:0016H         SYMBOL        count
   D:0098H         PUBLIC        SCON
   D:0088H         PUBLIC        TCON
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 9
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 9
 
 
   C:09B0H         PUBLIC        delay_50ms
@@ -539,7 +539,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
   C:0171H         LINE#         63
   C:01B8H         LINE#         64
   C:01BBH         LINE#         65
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 10
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 10
 
 
   C:01BBH         LINE#         66
@@ -599,7 +599,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
   -------         DO            
   D:0007H         SYMBOL        j
   -------         ENDDO         
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 11
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 11
 
 
   C:05DCH         LINE#         136
@@ -659,7 +659,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
   D:0004H         SYMBOL        i
   -------         ENDDO         
   C:08D2H         LINE#         186
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  12:37:54  PAGE 12
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/31/2019  13:57:34  PAGE 12
 
 
   C:08E1H         LINE#         188
@@ -688,17 +688,5 @@ SYMBOL TABLE OF MODULE:  .\Objects\calendar (?C_STARTUP)
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_LCD1602_PRINT?LCD1602
 
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?PRINT_TIME?MAIN
-
-*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
-    SYMBOL:  PRINTF_TIME
-    MODULE:  .\Objects\main.obj (MAIN)
-
-*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
-    SYMBOL:  PRINTF_TIME
-    MODULE:  .\Objects\main.obj (MAIN)
-    ADDRESS: 0022H
-
 Program Size: data=44.0 xdata=0 code=2786
-LINK/LOCATE RUN COMPLETE.  4 WARNING(S),  0 ERROR(S)
+LINK/LOCATE RUN COMPLETE.  1 WARNING(S),  0 ERROR(S)
