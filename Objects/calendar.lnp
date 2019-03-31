@@ -1,0 +1,6 @@
+".\Objects\STARTUP.obj",
+".\Objects\lcd1602.obj",
+".\Objects\ds1302.obj",
+".\Objects\main.obj" 
+TO ".\Objects\calendar" 
+PRINT(".\Listings\calendar.m51") RAMSIZE(256) 
