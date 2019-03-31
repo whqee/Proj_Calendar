@@ -3,6 +3,9 @@
 #include <ds1302.h>
 #include <stdio.h>
 
+#define BCD_TO_BIN(val)   ((((val) >> 4) * 10) +  ((val)&15))
+#define BCD_TO_ASCCII(val)    (((((val) >> 8) + 0x30) << 8) +  (((val) & 0xFF) + 0x30))
+
 sbit KEY0 = P3^2;
 sbit KEY1 = P3^3;
 
@@ -37,7 +40,7 @@ void main()
 			goto Set_Time;
 		
 		ds1302_read_time(time_now);
-		printf_time();
+		print_time();
 	}
 	while(1)
 	{
@@ -135,44 +138,58 @@ void main()
 
 static void print_time()
 {
-	u8 j = 7;
+	u8 j = 7, x = 2, y =0;
+	lcd1602_show_str(0,0, "20", 2);
 	while(j--)
 	{
 		time_ascii[2*j+1] = time_now[j] & 63 | 48;
 		time_ascii[2*j] = time_now[j] >>4 &63 | 48;
-	}
 
-	lcd1602_show_str(0,0, "20", 2);
-	lcd1602_show_str(2,0, &time_ascii[12], 2);
-	lcd1602_show_str(4,0, ".", 1);
-	lcd1602_show_str(5,0, &time_ascii[8], 2);
-	lcd1602_show_str(7,0, ".", 1);
-	lcd1602_show_str(8,0, &time_ascii[6], 2);
+		if (y == 0 && x <= 8) {
+			lcd1602_show_str(x,y, &time_ascii[2*j], 2);
+			x += 2;
+			if (x > 8) 
+				lcd1602_show_str(x,y, " ", 1);
+			else
+				lcd1602_show_str(x,y, ".", 2);
+			x += 1;
+		}
+
+		if (y == 0 && x == 11) {
+			switch ((time_ascii[2*j+1] & 15)) {
+			case 1:
+				lcd1602_show_str(x,y, "1 Mon", 5); break;
+			case 2:
+				lcd1602_show_str(x,y, "2 Tue", 5); break;
+			case 3:
+				lcd1602_show_str(x,y, "3 Wed", 5); break;
+			case 4:
+				lcd1602_show_str(x,y, "4 Thu", 5); break;
+			case 5:
+				lcd1602_show_str(x,y, "5 Fri", 5); break;
+			case 6:
+				lcd1602_show_str(x,y, "6 Sat", 5); break;
+			case 7:
+				lcd1602_show_str(x,y, "7 Sun", 5); break;
+			default:
+				lcd1602_show_str(x,y, &time_ascii[2*j+1], 1); break;
+			}
+			x = 0;
+			y = 1;
+		}
 		
-	lcd1602_show_str(0,1, &time_ascii[4], 2);
-	lcd1602_show_str(2,1, ":", 1);
-	lcd1602_show_str(3,1, &time_ascii[2], 2);
-	lcd1602_show_str(5,1, ":", 1);
-	lcd1602_show_str(6,1, &time_ascii[0], 2);
+		if (y == 1 && x < 9) {
+			lcd1602_show_str(x,y, &time_ascii[2*j], 2);
+			x += 2;
+			if (x < 6)
+				lcd1602_show_str(x,y, ":", 1);
+			x += 1;				
+		}
 		
-	switch ((time_ascii[11] & 15)) {
-		case 0x1:
-			lcd1602_show_str(11,0, "1 Mon", 5); break;
-		case 0x2:
-			lcd1602_show_str(11,0, "2 Tue", 5); break;
-		case 0x3:
-			lcd1602_show_str(11,0, "3 Wed", 5); break;
-		case 4:
-			lcd1602_show_str(11,0, "4 Thu", 5); break;
-		case 5:
-			lcd1602_show_str(11,0, "5 Fri", 5); break;
-		case 6:
-			lcd1602_show_str(11,0, "6 Sat", 5); break;
-		case 7:
-			lcd1602_show_str(11,0, "7 Sun", 5); break;
-		default:
-			lcd1602_show_str(11,0, &time_ascii[11], 1); break;
+		
 	}
+	j = 7; x = 2; y =0;
+	
 }
 
 void delay_50ms()

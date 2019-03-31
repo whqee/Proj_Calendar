@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   DS1302                                                            03/30/2019 17:22:15 PAGE 1   
+C51 COMPILER V9.59.0.0   DS1302                                                            03/31/2019 13:43:33 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE DS1302
@@ -15,10 +15,10 @@ line level    source
    5          sbit RST = P1^2;
    6          
    7          
-   8          u8 code DS1302_READ_ADDR[7] = {0x81, 0x83, 0x85, 0x87, 0x89, 0x8b, 0x8d}; //0-7:  s,min,hours,date,month,d
-             -ay,year
-   9          u8 code DS1302_WRITE_ADDR[7] = {0x80, 0x82, 0x84, 0x86, 0x88, 0x8a, 0x8c};//0-7:  s,min,hours,date,month,d
-             -ay,year
+   8          u8 code DS1302_READ_ADDR[7] = { 0x81, 0x83, 0x85, 0x8b, 0x87, 0x89, 0x8d }; //0-7:  sec,min,hours,day,date
+             -,mon,year
+   9          u8 code DS1302_WRITE_ADDR[7] = { 0x80, 0x82, 0x84, 0x8a, 0x86, 0x88, 0x8c };//0-7:  sec,min,hours,day,date
+             -,mon,year
   10          
   11          // Internal functionsd definitions:
   12          static u8 ds1302_read_reg(u8 addr);
@@ -62,7 +62,7 @@ line level    source
   50          {
   51   1        u8 i = 0, dat = 0, dat1 = 0;
   52   1      
-C51 COMPILER V9.59.0.0   DS1302                                                            03/30/2019 17:22:15 PAGE 2   
+C51 COMPILER V9.59.0.0   DS1302                                                            03/31/2019 13:43:33 PAGE 2   
 
   53   1        RST = 0;
   54   1        _nop_();
@@ -126,7 +126,7 @@ line level    source
  112   1      
  113   1        for (i=0; i<8; i++)   //write addr
  114   1        {
-C51 COMPILER V9.59.0.0   DS1302                                                            03/30/2019 17:22:15 PAGE 3   
+C51 COMPILER V9.59.0.0   DS1302                                                            03/31/2019 13:43:33 PAGE 3   
 
  115   2          IO = addr & 0x01; 
  116   2          addr >>= 1;     

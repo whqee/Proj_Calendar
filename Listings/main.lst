@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 12:37:54 PAGE 1   
+C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 13:50:28 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MAIN
@@ -13,231 +13,249 @@ line level    source
    3          #include <ds1302.h>
    4          #include <stdio.h>
    5          
-   6          sbit KEY0 = P3^2;
-   7          sbit KEY1 = P3^3;
+   6          #define BCD_TO_BIN(val)   ((((val) >> 4) * 10) +  ((val)&15))
+   7          #define BCD_TO_ASCCII(val)    (((((val) >> 8) + 0x30) << 8) +  (((val) & 0xFF) + 0x30))
    8          
-   9          
-  10          u8 i = 0, k;
-  11          static u8 count = 0;
-  12          static char time_now[7];
-  13          static char time_ascii[14];
-  14          
-  15          //functions prototype:
-  16          static void print_time();
-  17          void delay_50ms();
-  18          
-  19          
-  20          void main()
-  21          {
-  22   1        EA = 0;
-  23   1        lcd1602_Init(); 
-  24   1        
-  25   1        /** KEY_Init: Set KEY0 Interrupt **/
-  26   1        IT0 = 1;      // Falling edge trigger
-  27   1        EX0 = 1;      // Enable EX0 Interrupt line
-  28   1        IT1 = 1;
-  29   1        EX1 = 0;
-  30   1        EA = 1;       // Enable Interrupt
-  31   1        /** End setting KEY0 Interrupt **/
-  32   1        
-  33   1        while(1)
-  34   1        {
-  35   2          Normal_Running:
-  36   2          if(count)
-  37   2            goto Set_Time;
-  38   2          
-  39   2          ds1302_read_time(time_now);
-  40   2          printf_time();
-*** WARNING C206 IN LINE 40 OF main.c: 'printf_time': missing function-prototype
-  41   2        }
-  42   1        while(1)
-  43   1        {
-  44   2          Set_Time:
-  45   2          if(!count)
-  46   2            goto Normal_Running;
-  47   2          while (count) {
-  48   3            switch (count) {
-  49   4              case 13:
-  50   4                k = 12;
-  51   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(2,0, &time_ascii[k], 1); 
-  52   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 9) ti
-             -me_now[k/2] &= 15;
-C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 12:37:54 PAGE 2   
+   9          sbit KEY0 = P3^2;
+  10          sbit KEY1 = P3^3;
+  11          
+  12          
+  13          u8 i = 0, k;
+  14          static u8 count = 0;
+  15          static char time_now[7];
+  16          static char time_ascii[14];
+  17          
+  18          //functions prototype:
+  19          static void print_time();
+  20          void delay_50ms();
+  21          
+  22          
+  23          void main()
+  24          {
+  25   1        EA = 0;
+  26   1        lcd1602_Init(); 
+  27   1        
+  28   1        /** KEY_Init: Set KEY0 Interrupt **/
+  29   1        IT0 = 1;      // Falling edge trigger
+  30   1        EX0 = 1;      // Enable EX0 Interrupt line
+  31   1        IT1 = 1;
+  32   1        EX1 = 0;
+  33   1        EA = 1;       // Enable Interrupt
+  34   1        /** End setting KEY0 Interrupt **/
+  35   1        
+  36   1        while(1)
+  37   1        {
+  38   2          Normal_Running:
+  39   2          if(count)
+  40   2            goto Set_Time;
+  41   2          
+  42   2          ds1302_read_time(time_now);
+  43   2          print_time();
+  44   2        }
+  45   1        while(1)
+  46   1        {
+  47   2          Set_Time:
+  48   2          if(!count)
+  49   2            goto Normal_Running;
+  50   2          while (count) {
+  51   3            switch (count) {
+  52   4              case 13:
+  53   4                k = 12;
+  54   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(2,0, &time_ascii[k], 1); 
+C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 13:50:28 PAGE 2   
 
-  53   4              break;
-  54   4              case 12:
-  55   4                k = 12;
-  56   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(3,0, &time_ascii[k+1], 1); 
-  57   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
-             -e_now[k/2] &= 240; // 240 is 1111 0000b
-  58   4              break;
-  59   4      
-  60   4              case 11:
-  61   4                k = 8;
-  62   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(5,0, &time_ascii[k], 1); 
-  63   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 1) ti
+  55   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 9) ti
              -me_now[k/2] &= 15;
-  64   4              break;
-  65   4              case 10:
-  66   4                k = 8;
-  67   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(6,0, &time_ascii[k+1], 1); 
-  68   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
+  56   4              break;
+  57   4              case 12:
+  58   4                k = 12;
+  59   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(3,0, &time_ascii[k+1], 1); 
+  60   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
              -e_now[k/2] &= 240; // 240 is 1111 0000b
-  69   4              break;
-  70   4      
-  71   4              case 9:
-  72   4                k = 6;
-  73   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(8,0, &time_ascii[k], 1); 
-  74   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 3) ti
+  61   4              break;
+  62   4      
+  63   4              case 11:
+  64   4                k = 8;
+  65   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(5,0, &time_ascii[k], 1); 
+  66   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 1) ti
              -me_now[k/2] &= 15;
-  75   4              break;
-  76   4              case 8:
-  77   4                k = 6;
-  78   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(9,0, &time_ascii[k+1], 1); 
-  79   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
+  67   4              break;
+  68   4              case 10:
+  69   4                k = 8;
+  70   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(6,0, &time_ascii[k+1], 1); 
+  71   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
              -e_now[k/2] &= 240; // 240 is 1111 0000b
-  80   4              break;
-  81   4      
-  82   4              case 7:
-  83   4                k = 10;
-  84   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(11,0, &time_ascii[k+1], 1); 
-  85   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 7) tim
-             -e_now[k/2] &= 240; // 240 is 1111 0000b
-  86   4              break;
-  87   4      
-  88   4              case 6:
-  89   4                k = 4;
-  90   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(0,1, &time_ascii[k], 1); 
-  91   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 2) ti
+  72   4              break;
+  73   4      
+  74   4              case 9:
+  75   4                k = 6;
+  76   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(8,0, &time_ascii[k], 1); 
+  77   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 3) ti
              -me_now[k/2] &= 15;
-  92   4              break;
-  93   4              case 5:
-  94   4                k = 4;
-  95   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(1,1, &time_ascii[k+1], 1); 
-  96   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
+  78   4              break;
+  79   4              case 8:
+  80   4                k = 6;
+  81   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(9,0, &time_ascii[k+1], 1); 
+  82   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
              -e_now[k/2] &= 240; // 240 is 1111 0000b
-  97   4              break;
-  98   4      
-  99   4              case 4:
- 100   4                k = 2;
- 101   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(3,1, &time_ascii[k], 1); 
- 102   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 6) ti
+  83   4              break;
+  84   4      
+  85   4              case 7:
+  86   4                k = 10;
+  87   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(11,0, &time_ascii[k+1], 1); 
+  88   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 7) tim
+             -e_now[k/2] &= 240; // 240 is 1111 0000b
+  89   4              break;
+  90   4      
+  91   4              case 6:
+  92   4                k = 4;
+  93   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(0,1, &time_ascii[k], 1); 
+  94   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 2) ti
              -me_now[k/2] &= 15;
- 103   4              break;
- 104   4              case 3:
- 105   4                k = 2;
-C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 12:37:54 PAGE 3   
+  95   4              break;
+  96   4              case 5:
+  97   4                k = 4;
+  98   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(1,1, &time_ascii[k+1], 1); 
+  99   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
+             -e_now[k/2] &= 240; // 240 is 1111 0000b
+ 100   4              break;
+ 101   4      
+ 102   4              case 4:
+ 103   4                k = 2;
+ 104   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(3,1, &time_ascii[k], 1); 
+ 105   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 6) ti
+             -me_now[k/2] &= 15;
+ 106   4              break;
+C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 13:50:28 PAGE 3   
 
- 106   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(4,1, &time_ascii[k+1], 1); 
- 107   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
+ 107   4              case 3:
+ 108   4                k = 2;
+ 109   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(4,1, &time_ascii[k+1], 1); 
+ 110   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
              -e_now[k/2] &= 240; // 240 is 1111 0000b
- 108   4              break;
- 109   4      
- 110   4              case 2:
- 111   4                k = 0;
- 112   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(6,1, &time_ascii[k], 1); 
- 113   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 6) ti
+ 111   4              break;
+ 112   4      
+ 113   4              case 2:
+ 114   4                k = 0;
+ 115   4                time_ascii[k] = time_now[k/2] >>4 & 63 | 48;  lcd1602_show_str(6,1, &time_ascii[k], 1); 
+ 116   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 16;  if((time_now[k/2]>>4) > 6) ti
              -me_now[k/2] &= 15;
- 114   4              break;
- 115   4              case 1:
- 116   4                k = 0;
- 117   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(7,1, &time_ascii[k+1], 1); 
- 118   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
+ 117   4              break;
+ 118   4              case 1:
+ 119   4                k = 0;
+ 120   4                time_ascii[k] = time_now[k/2] & 63 | 48;  lcd1602_show_str(7,1, &time_ascii[k+1], 1); 
+ 121   4                for(i=11; i > 0; i--)delay_50ms();  if(KEY1 == 0) time_now[k/2] += 1;  if(time_now[k/2] & 15 > 9) tim
              -e_now[k/2] &= 240; // 240 is 1111 0000b
- 119   4              break;
- 120   4            }
- 121   3            ds1302_set_time(time_now);
- 122   3          }
- 123   2          //time_now[0] = 0x50;
- 124   2          //time_now[1] = 0x59;
- 125   2          //time_now[2] = 0x23;
- 126   2          //time_now[3] = 0x23;
- 127   2          //time_now[4] = 0x10;
- 128   2          //time_now[5] = 0x01;
- 129   2          //time_now[6] = 0x17;
- 130   2          //ds1302_set_time(time_now);
- 131   2        }
- 132   1        
- 133   1      }
- 134          
- 135          
- 136          static void print_time()
- 137          {
- 138   1        u8 j = 7;
- 139   1        while(j--)
- 140   1        {
- 141   2          time_ascii[2*j+1] = time_now[j] & 63 | 48;
- 142   2          time_ascii[2*j] = time_now[j] >>4 &63 | 48;
- 143   2        }
- 144   1      
- 145   1        lcd1602_show_str(0,0, "20", 2);
- 146   1        lcd1602_show_str(2,0, &time_ascii[12], 2);
- 147   1        lcd1602_show_str(4,0, ".", 1);
- 148   1        lcd1602_show_str(5,0, &time_ascii[8], 2);
- 149   1        lcd1602_show_str(7,0, ".", 1);
- 150   1        lcd1602_show_str(8,0, &time_ascii[6], 2);
- 151   1          
- 152   1        lcd1602_show_str(0,1, &time_ascii[4], 2);
- 153   1        lcd1602_show_str(2,1, ":", 1);
- 154   1        lcd1602_show_str(3,1, &time_ascii[2], 2);
- 155   1        lcd1602_show_str(5,1, ":", 1);
- 156   1        lcd1602_show_str(6,1, &time_ascii[0], 2);
- 157   1          
- 158   1        switch ((time_ascii[11] & 15)) {
- 159   2          case 0x1:
- 160   2            lcd1602_show_str(11,0, "1 Mon", 5); break;
- 161   2          case 0x2:
- 162   2            lcd1602_show_str(11,0, "2 Tue", 5); break;
- 163   2          case 0x3:
- 164   2            lcd1602_show_str(11,0, "3 Wed", 5); break;
-C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 12:37:54 PAGE 4   
+ 122   4              break;
+ 123   4            }
+ 124   3            ds1302_set_time(time_now);
+ 125   3          }
+ 126   2          //time_now[0] = 0x50;
+ 127   2          //time_now[1] = 0x59;
+ 128   2          //time_now[2] = 0x23;
+ 129   2          //time_now[3] = 0x23;
+ 130   2          //time_now[4] = 0x10;
+ 131   2          //time_now[5] = 0x01;
+ 132   2          //time_now[6] = 0x17;
+ 133   2          //ds1302_set_time(time_now);
+ 134   2        }
+ 135   1        
+ 136   1      }
+ 137          
+ 138          
+ 139          static void print_time()
+ 140          {
+ 141   1        u8 j = 7, x = 2, y =0;
+ 142   1        lcd1602_show_str(0,0, "20", 2);
+ 143   1        while(j--)
+ 144   1        {
+ 145   2          time_ascii[2*j+1] = time_now[j] & 63 | 48;
+ 146   2          time_ascii[2*j] = time_now[j] >>4 &63 | 48;
+ 147   2      
+ 148   2          if (y == 0 && x <= 8) {
+ 149   3            lcd1602_show_str(x,y, &time_ascii[2*j], 2);
+ 150   3            x += 2;
+ 151   3            if (x > 8) 
+ 152   3              lcd1602_show_str(x,y, " ", 1);
+ 153   3            else
+ 154   3              lcd1602_show_str(x,y, ".", 2);
+ 155   3            x += 1;
+ 156   3          }
+ 157   2      
+ 158   2          if (y == 0 && x == 11) {
+ 159   3            switch ((time_ascii[2*j+1] & 15)) {
+ 160   4            case 1:
+ 161   4              lcd1602_show_str(x,y, "1 Mon", 5); break;
+ 162   4            case 2:
+ 163   4              lcd1602_show_str(x,y, "2 Tue", 5); break;
+ 164   4            case 3:
+ 165   4              lcd1602_show_str(x,y, "3 Wed", 5); break;
+C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 13:50:28 PAGE 4   
 
- 165   2          case 4:
- 166   2            lcd1602_show_str(11,0, "4 Thu", 5); break;
- 167   2          case 5:
- 168   2            lcd1602_show_str(11,0, "5 Fri", 5); break;
- 169   2          case 6:
- 170   2            lcd1602_show_str(11,0, "6 Sat", 5); break;
- 171   2          case 7:
- 172   2            lcd1602_show_str(11,0, "7 Sun", 5); break;
- 173   2          default:
- 174   2            lcd1602_show_str(11,0, &time_ascii[11], 1); break;
- 175   2        }
- 176   1      }
- 177          
- 178          void delay_50ms()
- 179          {
- 180   1        unsigned char a,b,c;
- 181   1          for(c=1;c>0;c--)
- 182   1              for(b=38;b>0;b--)
- 183   1                  for(a=130;a>0;a--);
- 184   1      }
- 185          
- 186          void KEY_Line() interrupt 0
- 187          {
- 188   1        u8 i = 0;
- 189   1        delay_50ms();
- 190   1        if(!count)
- 191   1          count = 13;
- 192   1        else 
- 193   1          count--;
- 194   1      
- 195   1        for(i=11; i > 0; i--)
- 196   1            delay_50ms();
- 197   1      }
- 198          
- 199          
+ 166   4            case 4:
+ 167   4              lcd1602_show_str(x,y, "4 Thu", 5); break;
+ 168   4            case 5:
+ 169   4              lcd1602_show_str(x,y, "5 Fri", 5); break;
+ 170   4            case 6:
+ 171   4              lcd1602_show_str(x,y, "6 Sat", 5); break;
+ 172   4            case 7:
+ 173   4              lcd1602_show_str(x,y, "7 Sun", 5); break;
+ 174   4            default:
+ 175   4              lcd1602_show_str(x,y, &time_ascii[2*j+1], 1); break;
+ 176   4            }
+ 177   3            x = 0;
+ 178   3            y = 1;
+ 179   3          }
+ 180   2          
+ 181   2          if (y == 1 && x < 9) {
+ 182   3            lcd1602_show_str(x,y, &time_ascii[2*j], 2);
+ 183   3            x += 2;
+ 184   3            if (x < 6)
+ 185   3              lcd1602_show_str(x,y, ":", 1);
+ 186   3            x += 1;       
+ 187   3          }
+ 188   2          
+ 189   2          
+ 190   2        }
+ 191   1        j = 7; x = 2; y =0;
+ 192   1        
+ 193   1      }
+ 194          
+ 195          void delay_50ms()
+ 196          {
+ 197   1        unsigned char a,b,c;
+ 198   1          for(c=1;c>0;c--)
+ 199   1              for(b=38;b>0;b--)
+ 200   1                  for(a=130;a>0;a--);
+ 201   1      }
+ 202          
+ 203          void KEY_Line() interrupt 0
+ 204          {
+ 205   1        u8 i = 0;
+ 206   1        delay_50ms();
+ 207   1        if(!count)
+ 208   1          count = 13;
+ 209   1        else 
+ 210   1          count--;
+ 211   1      
+ 212   1        for(i=11; i > 0; i--)
+ 213   1            delay_50ms();
+ 214   1      }
+ 215          
+ 216          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1952    ----
-   CONSTANT SIZE    =     49    ----
+   CODE SIZE        =   2007    ----
+   CONSTANT SIZE    =     51    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     24    ----
+   DATA SIZE        =     24       3
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
+C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 13:50:28 PAGE 5   
 
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
