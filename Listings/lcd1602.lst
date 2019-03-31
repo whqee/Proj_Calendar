@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   LCD1602                                                           03/31/2019 12:33:19 PAGE 1   
+C51 COMPILER V9.59.0.0   LCD1602                                                           03/31/2019 17:37:09 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE LCD1602
@@ -16,122 +16,122 @@ line level    source
    6          sbit lcd1602_RW = P2^6;     
    7          sbit lcd1602_RS = P2^5;     
    8          
-   9          static u8 x = 0, y = 0;
-  10          static void delay5ms(void);
-  11          static void lcd1602_wait_noBusy(void);
-  12          static void lcd1602_write_cmd(u8 cmd);
-  13          static void lcd1602_write_data(u8 dat);
+   9          static void delay5ms(void);
+  10          static void lcd1602_wait_noBusy(void);
+  11          static void lcd1602_write_cmd(u8 cmd);
+  12          static void lcd1602_write_data(u8 dat);
+  13          
   14          
   15          
-  16          
-  17          static void lcd1602_wait_noBusy(void)  
-  18          {
-  19   1          u8 sta = 0;      //
-  20   1      
-  21   1          LCD1602_DATA_PORT = 0xff;
-  22   1          lcd1602_RS = 0;
-  23   1          lcd1602_RW = 1;
-  24   1          do
-  25   1          {
-  26   2              lcd1602_E = 1;
-  27   2              sta = LCD1602_DATA_PORT;
-  28   2              lcd1602_E = 0;    
-  29   2          }while(sta & 0x80);
-  30   1      }
-  31          
-  32          static void lcd1602_write_cmd(u8 cmd)   
-  33          {
-  34   1        lcd1602_wait_noBusy();    
-  35   1      
-  36   1        lcd1602_E = 0;        
-  37   1        lcd1602_RS = 0;       
-  38   1        lcd1602_RW = 0;       
-  39   1        LCD1602_DATA_PORT = cmd;    
-  40   1        lcd1602_E = 1;              
-  41   1        lcd1602_E = 0;        
-  42   1      }
-  43          
-  44          static void lcd1602_write_data(u8 dat)      
-  45          {
-  46   1        lcd1602_wait_noBusy();    
-  47   1      
-  48   1        lcd1602_E = 0;        
-  49   1        lcd1602_RS = 1;       
-  50   1        lcd1602_RW = 0;       
-  51   1        LCD1602_DATA_PORT = dat;   
-  52   1        lcd1602_E = 1;              
-  53   1        lcd1602_E = 0;        
-  54   1      }
-C51 COMPILER V9.59.0.0   LCD1602                                                           03/31/2019 12:33:19 PAGE 2   
+  16          static void lcd1602_wait_noBusy(void)  
+  17          {
+  18   1          u8 sta = 0;      //
+  19   1      
+  20   1          LCD1602_DATA_PORT = 0xff;
+  21   1          lcd1602_RS = 0;
+  22   1          lcd1602_RW = 1;
+  23   1          do
+  24   1          {
+  25   2              lcd1602_E = 1;
+  26   2              sta = LCD1602_DATA_PORT;
+  27   2              lcd1602_E = 0;    
+  28   2          }while(sta & 0x80);
+  29   1      }
+  30          
+  31          static void lcd1602_write_cmd(u8 cmd)   
+  32          {
+  33   1        lcd1602_wait_noBusy();    
+  34   1      
+  35   1        lcd1602_E = 0;        
+  36   1        lcd1602_RS = 0;       
+  37   1        lcd1602_RW = 0;       
+  38   1        LCD1602_DATA_PORT = cmd;    
+  39   1        lcd1602_E = 1;              
+  40   1        lcd1602_E = 0;        
+  41   1      }
+  42          
+  43          static void lcd1602_write_data(u8 dat)      
+  44          {
+  45   1        lcd1602_wait_noBusy();    
+  46   1      
+  47   1        lcd1602_E = 0;        
+  48   1        lcd1602_RS = 1;       
+  49   1        lcd1602_RW = 0;       
+  50   1        LCD1602_DATA_PORT = dat;   
+  51   1        lcd1602_E = 1;              
+  52   1        lcd1602_E = 0;        
+  53   1      }
+  54          
+C51 COMPILER V9.59.0.0   LCD1602                                                           03/31/2019 17:37:09 PAGE 2   
 
-  55          
-  56          void lcd1602_Init(void)           
-  57          {
-  58   1        lcd1602_write_cmd(0x38);    
-  59   1        delay5ms();         
-  60   1        lcd1602_write_cmd(0x38);    
-  61   1        delay5ms();         
-  62   1        lcd1602_write_cmd(0x38);    
-  63   1        delay5ms();         
-  64   1        lcd1602_write_cmd(0x38);    
-  65   1        lcd1602_write_cmd(0x08);    
-  66   1        lcd1602_write_cmd(0x01);    
-  67   1        lcd1602_write_cmd(0x06);    
-  68   1        lcd1602_write_cmd(0x0c);    
-  69   1      }
+  55          void lcd1602_Init(void)           
+  56          {
+  57   1        lcd1602_write_cmd(0x38);    
+  58   1        delay5ms();         
+  59   1        lcd1602_write_cmd(0x38);    
+  60   1        delay5ms();         
+  61   1        lcd1602_write_cmd(0x38);    
+  62   1        delay5ms();         
+  63   1        lcd1602_write_cmd(0x38);    
+  64   1        lcd1602_write_cmd(0x08);    
+  65   1        lcd1602_write_cmd(0x01);    
+  66   1        lcd1602_write_cmd(0x06);    
+  67   1        lcd1602_write_cmd(0x0c);    
+  68   1      }
+  69          
   70          
   71          
   72          
-  73          
-  74          void lcd1602_set_cursor(u8 x, u8 y)  
-  75          {
-  76   1          u8 addr = 0;
-  77   1      
-  78   1          switch (y)
-  79   1        {
-  80   2          case 0:           
-  81   2            addr = 0x00 + x;    break;  
-  82   2          case 1:           
-  83   2            addr = 0x40 + x;    break;
-  84   2          default:
-  85   2                        break;
-  86   2        }
-  87   1          lcd1602_write_cmd(addr | 0x80);
-  88   1      }
-  89          
-  90          void lcd1602_show_str(u8 x, u8 y, u8 *pStr, u8 size)     
-  91          {
-  92   1          lcd1602_set_cursor(x, y);      
-  93   1          while (size--)
-  94   1          {
-  95   2              lcd1602_write_data(*pStr++);
-  96   2          }
-  97   1      }
-  98          
-  99          void lcd1602_print(u8 *pStr)     
- 100          {
- 101   1          lcd1602_set_cursor(x, y);      
+  73          void lcd1602_set_cursor(u8 x, u8 y)  
+  74          {
+  75   1          u8 addr = 0;
+  76   1      
+  77   1          switch (y)
+  78   1        {
+  79   2          case 0:           
+  80   2            addr = 0x00 + x;    break;  
+  81   2          case 1:           
+  82   2            addr = 0x40 + x;    break;
+  83   2          default:
+  84   2                        break;
+  85   2        }
+  86   1          lcd1602_write_cmd(addr | 0x80);
+  87   1      }
+  88          
+  89          void lcd1602_show_str(u8 x, u8 y, u8 *pStr, u8 size)     
+  90          {
+  91   1          lcd1602_set_cursor(x, y);      
+  92   1          while (size--)
+  93   1          {
+  94   2              lcd1602_write_data(*pStr++);
+  95   2          }
+  96   1      }
+  97          
+  98          void lcd1602_print(u8 *pStr)     
+  99          {
+ 100   1        u8 x = 0;
+ 101   1          lcd1602_set_cursor(x, 0);      
  102   1          while (*pStr != '\0')
  103   1          {
  104   2              lcd1602_write_data(*pStr++);
- 105   2              if(x++ == 15)
- 106   2              {
- 107   3                x = 0;
- 108   3                y = 1;
- 109   3              }
- 110   2              lcd1602_set_cursor(x, y);
- 111   2          }
- 112   1      }
- 113          
- 114          
- 115          static void delay5ms(void)   
- 116          {
-C51 COMPILER V9.59.0.0   LCD1602                                                           03/31/2019 12:33:19 PAGE 3   
+ 105   2            if(x++ == 15)
+ 106   2              lcd1602_set_cursor(0, 1);
+ 107   2          }
+ 108   1      }
+ 109          
+ 110          
+ 111          static void delay5ms(void)   
+ 112          {
+ 113   1          unsigned char a,b;
+ 114   1          for(b=19;b>0;b--)
+ 115   1              for(a=130;a>0;a--);
+ 116   1      }  
+C51 COMPILER V9.59.0.0   LCD1602                                                           03/31/2019 17:37:09 PAGE 3   
 
- 117   1          unsigned char a,b;
- 118   1          for(b=19;b>0;b--)
- 119   1              for(a=130;a>0;a--);
- 120   1      }  
+ 117          
+ 118          
+ 119          
+ 120          
  121          
  122          
  123          
@@ -154,18 +154,14 @@ line level    source
  140          
  141          
  142          
- 143          
- 144          
- 145          
- 146          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    242    ----
+   CODE SIZE        =    239    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =      2       9
+   DATA SIZE        =   ----       9
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
