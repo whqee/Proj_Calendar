@@ -5,10 +5,13 @@ sbit IO = P1^1;
 sbit RST = P1^2;
 
 
-u8 code DS1302_READ_ADDR[7] = {0x81, 0x83, 0x85, 0x87, 0x89, 0x8b, 0x8d}; //0-7:  s,min,hours,date,month,day,year
-u8 code DS1302_WRITE_ADDR[7] = {0x80, 0x82, 0x84, 0x86, 0x88, 0x8a, 0x8c};//0-7:  s,min,hours,date,month,day,year
+u8 code DS1302_READ_ADDR[7] = { 0x81, 0x83, 0x85, 0x8b, 0x87, 0x89, 0x8d }; //0-6:  sec,min,hours,day,date,mon,year
+u8 code DS1302_WRITE_ADDR[7] = { 0x80, 0x82, 0x84, 0x8a, 0x86, 0x88, 0x8c };//0-6:  sec,min,hours,day,date,mon,year
 
-// Internal functionsd definitions:
+// u8 code DS1302_READ_ADDR[7] = {0x81, 0x83, 0x85, 0x87, 0x89, 0x8b, 0x8d}; //0-6:  s,min,hours,date,month,day,year
+// u8 code DS1302_WRITE_ADDR[7] = {0x80, 0x82, 0x84, 0x86, 0x88, 0x8a, 0x8c};//0-6:  s,min,hours,date,month,day,year
+
+// Internal functions prototype:
 static u8 ds1302_read_reg(u8 addr);
 static void ds1302_write_reg(u8 addr, u8 dat);
 
@@ -33,6 +36,13 @@ void ds1302_set_time(u8 time[7])
 	ds1302_write_reg(0x8E,0x00);  //Disable WP and be ready to write
 	while(i--)
 		ds1302_write_reg(DS1302_WRITE_ADDR[i], time[i]);
+	ds1302_write_reg(0x8e, 0x80); //Enable WP to disable write access
+}
+
+void ds1302_set_time_once(u8 write_addr_num, u8 t)
+{
+	ds1302_write_reg(0x8E,0x00);  //Disable WP and be ready to write
+	ds1302_write_reg(DS1302_WRITE_ADDR[write_addr_num], t);
 	ds1302_write_reg(0x8e, 0x80); //Enable WP to disable write access
 }
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 C51 COMPILER V9.59.0.0   MAIN                                                              03/31/2019 13:57:34 PAGE 1   
+=======
+C51 COMPILER V9.59.0.0   MAIN                                                              04/01/2019 21:15:04 PAGE 1   
+>>>>>>> dev
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MAIN
@@ -11,21 +15,22 @@ line level    source
    1          #include <common.h>
    2          #include <lcd1602.h>
    3          #include <ds1302.h>
-   4          #include <stdio.h>
-   5          
-   6          sbit KEY0 = P3^2;
-   7          sbit KEY1 = P3^3;
-   8          
-   9          
-  10          u8 i = 0, k;
-  11          static u8 count = 0;
-  12          static char time_now[7];
-  13          static char time_ascii[14];
-  14          
-  15          //functions prototype:
-  16          static void print_time();
-  17          void delay_50ms();
+   4          
+   5          #define BCD_TO_BIN(val)   ( (((val) >> 4) * 10) +  ((val)&15) )    // Applicable to 8 'bit data length
+   6          #define BIN_TO_BCD(val)   ( (((val)/10) << 4) + (((val)%10)) )     // Applicable to 8 'bit data length
+   7          
+   8          sbit KEY0 = P3^2;
+   9          sbit KEY1 = P3^3;
+  10          
+  11          // Variable definition:
+  12          u8 i = 0, xdata tmp;  // temporary 'data
+  13          static u8 xdata count = 0;  // running flag for KEY0_Line Interrupt 0
+  14          static u8 xdata pm = 0;  // define for am pm
+  15          static u8 xdata Enable_12_hour_display = 0xff;
+  16          static char xdata time_now[7];
+  17          static char time_ascii[14];
   18          
+<<<<<<< HEAD
   19          
   20          void main()
   21          {
@@ -226,14 +231,323 @@ line level    source
  197   1      }
  198          
  199          
+=======
+  19          //functions prototype:
+  20          static void print_time();
+  21          void check_time();
+  22          void update_time_for_set_time(u8 x,u8 y,u8 t,u8 count_copy);
+  23          void delay_50ms();
+  24          
+  25          
+  26          void main()
+  27          {
+  28   1        EA = 0; // Disable Interrupt
+  29   1        lcd1602_Init(); 
+  30   1        
+  31   1        /** KEY_Init: Set KEY0 Interrupt **/
+  32   1        IT0 = 1;      // KEY0 Falling edge trigger
+  33   1        IT1 = 1;      // KEY1 Falling edge trigger
+  34   1        EX0 = 1;      // Enable KEY0 Interrupt line
+  35   1        EX1 = 0;
+  36   1        EA = 1;       // Enable Interrupt
+  37   1        /** End setting KEY0 Interrupt **/
+  38   1        
+  39   1        while(1)
+  40   1        {
+  41   2          Normal_Running:
+  42   2          if(count)
+  43   2            goto Set_Time;
+  44   2          
+  45   2          ds1302_read_time(time_now);
+  46   2          check_time();
+  47   2          print_time();
+  48   2        }
+  49   1        while(1)
+  50   1        {
+  51   2          Set_Time:
+  52   2          if(!count)
+  53   2            goto Normal_Running;
+  54   2      
+C51 COMPILER V9.59.0.0   MAIN                                                              04/01/2019 21:15:04 PAGE 2   
+
+  55   2          while (count) {
+  56   3            switch (count) {
+  57   4            case 1:
+  58   4              tmp = BCD_TO_BIN(time_now[count-1]);
+  59   4              if (KEY1 == 0) {
+  60   5                tmp++;
+  61   5                if (tmp > 59) tmp = 0;  //modify here         1
+  62   5                time_now[count-1] = BIN_TO_BCD(tmp);
+  63   5              }
+  64   4              update_time_for_set_time(6,1,5,count);   // Modify here  2
+  65   4              break;
+  66   4            case 2:
+  67   4              tmp = BCD_TO_BIN(time_now[count-1]);
+  68   4              if (KEY1 == 0) {
+  69   5                tmp++;
+  70   5                if (tmp > 59) tmp = 0;  //modify here         1
+  71   5                time_now[count-1] = BIN_TO_BCD(tmp);
+  72   5              }
+  73   4              update_time_for_set_time(3,1,5,count);   // Modify here  2
+  74   4              break;
+  75   4            case 3:
+  76   4              tmp = BCD_TO_BIN(time_now[count-1]);
+  77   4              if (KEY1 == 0) {
+  78   5                tmp++;
+  79   5                if (tmp > 23) tmp = 0;  //modify here          1
+  80   5                time_now[count-1] = BIN_TO_BCD(tmp);
+  81   5              }
+  82   4              if (Enable_12_hour_display) {
+  83   5                if (BCD_TO_BIN(time_now[2]) > 12 ) {
+  84   6                  tmp = BIN_TO_BCD(BCD_TO_BIN(time_now[2]) - 12);
+  85   6                  lcd1602_show_str(0,1, &tmp, 2);
+  86   6                } else
+  87   5                {
+  88   6                  lcd1602_show_str(0,1, &tmp, 2);
+  89   6                }
+  90   5              }
+  91   4              update_time_for_set_time(0,1,5,count);   // Modify here  2
+  92   4              break;
+  93   4            case 4:
+  94   4              tmp = BCD_TO_BIN(time_now[count-1]);
+  95   4              if (KEY1 == 0) {
+  96   5                tmp++;
+  97   5                if (tmp > 7) tmp = 1; //modify here             1 
+  98   5                time_now[count-1] = BIN_TO_BCD(tmp);
+  99   5              }
+ 100   4              // update display'
+ 101   4              EA = 0; // Disable Interrupt
+ 102   4              lcd1602_show_str(10,0, "  ", 2);  // modify here (x,y)           2
+ 103   4              for(i=2; i > 0; i--) delay_50ms();
+ 104   4              time_ascii[2*count-1] = time_now[count-1] & 63 | 48;    // BCD TO ASCII.
+ 105   4              time_ascii[2*count-2] = time_now[count-1] >>4 &63 | 48; // BCD TO ASCII.
+ 106   4              switch ((time_now[3] & 15)) {             //modify here  (x,y)                 3-8
+ 107   5              case 1:
+ 108   5                lcd1602_show_str(11,0, "1 Mon", 5); break;
+ 109   5              case 2:
+ 110   5                lcd1602_show_str(11,0, "2 Tue", 5); break;
+ 111   5              case 3:
+ 112   5                lcd1602_show_str(11,0, "3 Wed", 5); break;
+ 113   5              case 4:
+ 114   5                lcd1602_show_str(11,0, "4 Thu", 5); break;
+ 115   5              case 5:
+ 116   5                lcd1602_show_str(11,0, "5 Fri", 5); break;
+C51 COMPILER V9.59.0.0   MAIN                                                              04/01/2019 21:15:04 PAGE 3   
+
+ 117   5              case 6:
+ 118   5                lcd1602_show_str(11,0, "6 Sat", 5); break;
+ 119   5              case 7:
+ 120   5                lcd1602_show_str(11,0, "7 Sun", 5); break;
+ 121   5              default:
+ 122   5                lcd1602_show_str(11,0, "error", 5);
+ 123   5                break;
+ 124   5              }
+ 125   4              EA = 1;   //Enable Interrupt
+ 126   4              for(i=2; i > 0; i--) delay_50ms();
+ 127   4              break;
+ 128   4            case 5:
+ 129   4              tmp = BCD_TO_BIN(time_now[count-1]);
+ 130   4              if (KEY1 == 0) {
+ 131   5                tmp++;
+ 132   5                if (tmp > 31) tmp = 1;  //modify here                 1
+ 133   5                time_now[count-1] = BIN_TO_BCD(tmp);
+ 134   5              }
+ 135   4              update_time_for_set_time(8,0,5,count);   // Modify here  2
+ 136   4              break;
+ 137   4            case 6:
+ 138   4              tmp = BCD_TO_BIN(time_now[count-1]);
+ 139   4              if (KEY1 == 0) {
+ 140   5                tmp++;
+ 141   5                if (tmp > 12) tmp = 1;  //modify here            1
+ 142   5                time_now[count-1] = BIN_TO_BCD(tmp);
+ 143   5              }
+ 144   4              update_time_for_set_time(5,0,5,count);   // Modify here  2
+ 145   4              break;
+ 146   4            case 7:
+ 147   4              tmp = BCD_TO_BIN(time_now[count-1]);
+ 148   4              if (KEY1 == 0) {
+ 149   5                tmp++;
+ 150   5                if (tmp > 99) tmp = 0;     // modify here         1
+ 151   5                time_now[count-1] = BIN_TO_BCD(tmp);
+ 152   5              }
+ 153   4              update_time_for_set_time(2,0,5,count);   // Modify here  2
+ 154   4              break;
+ 155   4            case 8:
+ 156   4              if (KEY1 == 0) Enable_12_hour_display = ~Enable_12_hour_display;
+ 157   4              if (Enable_12_hour_display) {
+ 158   5                if (pm) {
+ 159   6                  lcd1602_show_str(9,1, "pm", 2);
+ 160   6                } else
+ 161   5                {
+ 162   6                  lcd1602_show_str(9,1, "am", 2);
+ 163   6                }
+ 164   5              } else
+ 165   4              {
+ 166   5                lcd1602_show_str(9,1, "  ", 2);
+ 167   5              }
+ 168   4              
+ 169   4              for(i=4; i > 0; i--) delay_50ms();
+ 170   4              lcd1602_show_str(9,1, "  ", 2);
+ 171   4              for(i=4; i > 0; i--) delay_50ms();
+ 172   4              break;
+ 173   4            default:
+ 174   4              lcd1602_show_str(11,0, "error", 5);
+ 175   4              break;
+ 176   4            }
+ 177   3          }
+ 178   2          ds1302_set_time(time_now);
+C51 COMPILER V9.59.0.0   MAIN                                                              04/01/2019 21:15:04 PAGE 4   
+
+ 179   2        }
+ 180   1        
+ 181   1      }
+ 182          
+ 183          
+ 184          void print_time()
+ 185          {
+ 186   1        u8 j = 7, x = 2, y =0;
+ 187   1        lcd1602_show_str(0,0, "20", 2);
+ 188   1        while(j--)
+ 189   1        {
+ 190   2          // BCD_TO_ASCII
+ 191   2          time_ascii[2*j+1] = time_now[j] & 63 | 48;
+ 192   2          time_ascii[2*j] = time_now[j] >>4 &63 | 48;
+ 193   2      
+ 194   2          // print: year.mon.date
+ 195   2          if (j > 3) {
+ 196   3            lcd1602_show_str(x,y, &time_ascii[2*j], 2);
+ 197   3            x += 2;
+ 198   3            if (x > 8) 
+ 199   3              lcd1602_show_str(x,y, " ", 1);
+ 200   3            else
+ 201   3              lcd1602_show_str(x,y, ".", 2);
+ 202   3            x += 1;
+ 203   3      
+ 204   3            
+ 205   3          }
+ 206   2      
+ 207   2          //print: day
+ 208   2          if (j == 3) {
+ 209   3            switch ((time_now[j] & 15)) {
+ 210   4            case 1:
+ 211   4              lcd1602_show_str(x,y, "1 Mon", 5); break;
+ 212   4            case 2:
+ 213   4              lcd1602_show_str(x,y, "2 Tue", 5); break;
+ 214   4            case 3:
+ 215   4              lcd1602_show_str(x,y, "3 Wed", 5); break;
+ 216   4            case 4:
+ 217   4              lcd1602_show_str(x,y, "4 Thu", 5); break;
+ 218   4            case 5:
+ 219   4              lcd1602_show_str(x,y, "5 Fri", 5); break;
+ 220   4            case 6:
+ 221   4              lcd1602_show_str(x,y, "6 Sat", 5); break;
+ 222   4            case 7:
+ 223   4              lcd1602_show_str(x,y, "7 Sun", 5); break;
+ 224   4            default:
+ 225   4              ds1302_set_time_once(j, 1);
+ 226   4              lcd1602_show_str(x,y, "error", 5);
+ 227   4              break;
+ 228   4            }
+ 229   3            x = 0;
+ 230   3            y = 1;
+ 231   3          }
+ 232   2          
+ 233   2          // print: hours:min:sec
+ 234   2          if (j < 3) {
+ 235   3            lcd1602_show_str(x,y, &time_ascii[2*j], 2);
+ 236   3            x += 2;
+ 237   3            if (x < 6)
+ 238   3              lcd1602_show_str(x,y, ":", 1);
+ 239   3            x += 1;       
+ 240   3          }
+C51 COMPILER V9.59.0.0   MAIN                                                              04/01/2019 21:15:04 PAGE 5   
+
+ 241   2          
+ 242   2          
+ 243   2        }
+ 244   1        // lcd1602_print(time_ascii);
+ 245   1        
+ 246   1      }
+ 247          
+ 248          
+ 249          void check_time()
+ 250          {
+ 251   1        if (BCD_TO_BIN(time_now[5]) ==  4 | 6 | 8 | 11 && BCD_TO_BIN(time_now[4] > 30)) {
+ 252   2            time_now[4] = 1;
+ 253   2            time_now[5] += 1;
+ 254   2            ds1302_set_time_once(5, time_now[5]);
+ 255   2            ds1302_set_time_once(4, time_now[4]);
+ 256   2        }
+ 257   1        if (BCD_TO_BIN(time_now[5]) == 2 && BCD_TO_BIN(time_now[4] > 28)) {
+ 258   2          if (! BCD_TO_BIN(time_now[6]) % 4) {
+ 259   3            time_now[4] = 1;
+ 260   3            time_now[5] += 1;
+ 261   3            ds1302_set_time_once(5, time_now[5]);
+ 262   3            ds1302_set_time_once(4, time_now[4]);
+ 263   3          }
+ 264   2        }
+ 265   1        if (Enable_12_hour_display) {
+ 266   2          if (BCD_TO_BIN(time_now[2]) > 12 ) {
+ 267   3            pm = 1;
+ 268   3            time_now[2] = BIN_TO_BCD(BCD_TO_BIN(time_now[2]) - 12);
+ 269   3            lcd1602_show_str(9,1, "pm", 2);
+ 270   3          } else
+ 271   2          {
+ 272   3            lcd1602_show_str(9,1, "am", 2);
+ 273   3          }
+ 274   2        }
+ 275   1      }
+ 276          
+ 277          
+ 278          void update_time_for_set_time(u8 x,u8 y,u8 t,u8 count_copy)
+ 279          {
+ 280   1        // update display
+ 281   1        EA = 0; // Disable Interrupt
+ 282   1        lcd1602_show_str(x,y, "  ", 2);  // modify here (x,y)          2
+ 283   1        for(i = t; i > 0; i--) delay_50ms();
+ 284   1        time_ascii[2*count_copy-1] = time_now[count_copy-1] & 63 | 48;    // BCD TO ASCII.
+ 285   1        time_ascii[2*count_copy-2] = time_now[count_copy-1] >>4 &63 | 48; // BCD TO ASCII.
+ 286   1        lcd1602_show_str(x,y, &time_ascii[2*count_copy-2], 2); // modify here (x,y)           3
+ 287   1        EA = 1;   //Enable Interrupt
+ 288   1        for(i = t; i > 0; i--) delay_50ms();
+ 289   1      }
+ 290          
+ 291          
+ 292          void delay_50ms()
+ 293          {
+ 294   1        unsigned char a,b,c;
+ 295   1          for(c=1;c>0;c--)
+ 296   1              for(b=38;b>0;b--)
+ 297   1                  for(a=130;a>0;a--);
+ 298   1      }
+ 299          
+ 300          void KEY_Line() interrupt 0
+ 301          {
+ 302   1        u8 i = 0;
+C51 COMPILER V9.59.0.0   MAIN                                                              04/01/2019 21:15:04 PAGE 6   
+
+ 303   1        delay_50ms(); //  Be adopted to prevent dithering and repeated actions
+ 304   1        if (KEY0 == 0) {
+ 305   2          if(!count)
+ 306   2            count = 8;
+ 307   2          else 
+ 308   2            count--;
+ 309   2      
+ 310   2          for(i=11; i > 0; i--)
+ 311   2            delay_50ms();
+ 312   2        }
+ 313   1      }
+ 314          
+ 315          
+>>>>>>> dev
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1952    ----
-   CONSTANT SIZE    =     49    ----
-   XDATA SIZE       =   ----    ----
+   CODE SIZE        =   2477    ----
+   CONSTANT SIZE    =     66    ----
+   XDATA SIZE       =     11    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     24    ----
+   DATA SIZE        =     15       7
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
