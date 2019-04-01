@@ -1854,7 +1854,7 @@
       <Size>100</Size>
       <ActiveTab>1</ActiveTab>
       <Doc>
-        <Name>D:\A\Keil_MDK5.25\C51\Inc\STC/STC89C5xRC.h</Name>
+        <Name>D:\A\Keil_MDK5.25\C51\Inc\STC\STC89C5xRC.h</Name>
         <ColumnNumber>16</ColumnNumber>
         <TopLine>38</TopLine>
         <CurrentLine>62</CurrentLine>
@@ -1864,9 +1864,9 @@
       </Doc>
       <Doc>
         <Name>.\main.c</Name>
-        <ColumnNumber>16</ColumnNumber>
-        <TopLine>137</TopLine>
-        <CurrentLine>155</CurrentLine>
+        <ColumnNumber>0</ColumnNumber>
+        <TopLine>1</TopLine>
+        <CurrentLine>4</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
