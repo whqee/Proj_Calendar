@@ -11,14 +11,15 @@ sbit KEY1 = P3^3;
 // Variable definition:
 u8 i = 0, xdata tmp;  // temporary 'data
 static u8 xdata count = 0;  // running flag for KEY0_Line Interrupt 0
-static u8 xdata Enable_12_hour_display = 1;
+static u8 xdata pm = 0;  // define for am pm
+static u8 xdata Enable_12_hour_display = 0xff;
 static char xdata time_now[7];
 static char time_ascii[14];
 
 //functions prototype:
 static void print_time();
 void check_time();
-void update_time_for_set_time(u8 x,u8 y,u8 i,u8 count_copy);
+void update_time_for_set_time(u8 x,u8 y,u8 t,u8 count_copy);
 void delay_50ms();
 
 
@@ -60,7 +61,7 @@ void main()
 					if (tmp > 59) tmp = 0;	//modify here         1
 					time_now[count-1] = BIN_TO_BCD(tmp);
 				}
-				update_time_for_set_time(6,1,2,count);   // Modify here  2
+				update_time_for_set_time(6,1,5,count);   // Modify here  2
 				break;
 			case 2:
 				tmp = BCD_TO_BIN(time_now[count-1]);
@@ -69,7 +70,7 @@ void main()
 					if (tmp > 59) tmp = 0;	//modify here         1
 					time_now[count-1] = BIN_TO_BCD(tmp);
 				}
-				update_time_for_set_time(3,1,2,count);   // Modify here  2
+				update_time_for_set_time(3,1,5,count);   // Modify here  2
 				break;
 			case 3:
 				tmp = BCD_TO_BIN(time_now[count-1]);
@@ -87,7 +88,7 @@ void main()
 						lcd1602_show_str(0,1, &tmp, 2);
 					}
 				}
-				update_time_for_set_time(0,1,2,count);   // Modify here  2
+				update_time_for_set_time(0,1,5,count);   // Modify here  2
 				break;
 			case 4:
 				tmp = BCD_TO_BIN(time_now[count-1]);
@@ -131,7 +132,7 @@ void main()
 					if (tmp > 31) tmp = 1;	//modify here                 1
 					time_now[count-1] = BIN_TO_BCD(tmp);
 				}
-				update_time_for_set_time(8,0,2,count);   // Modify here  2
+				update_time_for_set_time(8,0,5,count);   // Modify here  2
 				break;
 			case 6:
 				tmp = BCD_TO_BIN(time_now[count-1]);
@@ -140,7 +141,7 @@ void main()
 					if (tmp > 12) tmp = 1;	//modify here            1
 					time_now[count-1] = BIN_TO_BCD(tmp);
 				}
-				update_time_for_set_time(5,0,2,count);   // Modify here  2
+				update_time_for_set_time(5,0,5,count);   // Modify here  2
 				break;
 			case 7:
 				tmp = BCD_TO_BIN(time_now[count-1]);
@@ -149,19 +150,25 @@ void main()
 					if (tmp > 99) tmp = 0;     // modify here         1
 					time_now[count-1] = BIN_TO_BCD(tmp);
 				}
-				update_time_for_set_time(2,0,2,count);   // Modify here  2
+				update_time_for_set_time(2,0,5,count);   // Modify here  2
 				break;
 			case 8:
 				if (KEY1 == 0) Enable_12_hour_display = ~Enable_12_hour_display;
 				if (Enable_12_hour_display) {
-					if (BCD_TO_BIN(time_now[2]) > 12 ) {
-						lcd1602_show_str(10,1, "pm", 2);
+					if (pm) {
+						lcd1602_show_str(9,1, "pm", 2);
 					} else
 					{
-						lcd1602_show_str(10,1, "am", 2);
+						lcd1602_show_str(9,1, "am", 2);
 					}
+				} else
+				{
+					lcd1602_show_str(9,1, "  ", 2);
 				}
-				for(i=5; i > 0; i--) delay_50ms();
+				
+				for(i=4; i > 0; i--) delay_50ms();
+				lcd1602_show_str(9,1, "  ", 2);
+				for(i=4; i > 0; i--) delay_50ms();
 				break;
 			default:
 				lcd1602_show_str(11,0, "error", 5);
@@ -257,27 +264,28 @@ void check_time()
 	}
 	if (Enable_12_hour_display) {
 		if (BCD_TO_BIN(time_now[2]) > 12 ) {
+			pm = 1;
 			time_now[2] = BIN_TO_BCD(BCD_TO_BIN(time_now[2]) - 12);
-			lcd1602_show_str(10,1, "pm", 2);
+			lcd1602_show_str(9,1, "pm", 2);
 		} else
 		{
-			lcd1602_show_str(10,1, "am", 2);
+			lcd1602_show_str(9,1, "am", 2);
 		}
 	}
 }
 
 
-void update_time_for_set_time(u8 x,u8 y,u8 i,u8 count_copy)
+void update_time_for_set_time(u8 x,u8 y,u8 t,u8 count_copy)
 {
 	// update display
 	EA = 0; // Disable Interrupt
 	lcd1602_show_str(x,y, "  ", 2);  // modify here (x,y)          2
-	for(; i > 0; i--) delay_50ms();
+	for(i = t; i > 0; i--) delay_50ms();
 	time_ascii[2*count_copy-1] = time_now[count_copy-1] & 63 | 48;    // BCD TO ASCII.
 	time_ascii[2*count_copy-2] = time_now[count_copy-1] >>4 &63 | 48; // BCD TO ASCII.
 	lcd1602_show_str(x,y, &time_ascii[2*count_copy-2], 2); // modify here (x,y)           3
 	EA = 1;		//Enable Interrupt
-	for(; i > 0; i--) delay_50ms();
+	for(i = t; i > 0; i--) delay_50ms();
 }
 
 
@@ -295,7 +303,7 @@ void KEY_Line() interrupt 0
 	delay_50ms();	//  Be adopted to prevent dithering and repeated actions
 	if (KEY0 == 0) {
 		if(!count)
-			count = 7;
+			count = 8;
 		else 
 			count--;
 
