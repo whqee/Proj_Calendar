@@ -11,7 +11,7 @@ u8 code DS1302_WRITE_ADDR[7] = { 0x80, 0x82, 0x84, 0x8a, 0x86, 0x88, 0x8c };//0-
 // u8 code DS1302_READ_ADDR[7] = {0x81, 0x83, 0x85, 0x87, 0x89, 0x8b, 0x8d}; //0-6:  s,min,hours,date,month,day,year
 // u8 code DS1302_WRITE_ADDR[7] = {0x80, 0x82, 0x84, 0x86, 0x88, 0x8a, 0x8c};//0-6:  s,min,hours,date,month,day,year
 
-// Internal functionsd definitions:
+// Internal functions prototype:
 static u8 ds1302_read_reg(u8 addr);
 static void ds1302_write_reg(u8 addr, u8 dat);
 

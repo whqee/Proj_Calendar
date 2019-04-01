@@ -6,6 +6,7 @@ sbit lcd1602_E	 = P2^7;
 sbit lcd1602_RW = P2^6;			
 sbit lcd1602_RS = P2^5;			
 
+// Internal functions prototype:
 static void delay5ms(void);
 static void lcd1602_wait_noBusy(void);
 static void lcd1602_write_cmd(u8 cmd);
@@ -95,17 +96,17 @@ void lcd1602_show_str(u8 x, u8 y, u8 *pStr, u8 size)
     }
 }
 
-void lcd1602_print(u8 *pStr)     
-{
-	u8 x = 0;
-    lcd1602_set_cursor(x, 0);      
-    while (*pStr != '\0')
-    {
-        lcd1602_write_data(*pStr++);
-			if(x++ == 15)
-				lcd1602_set_cursor(0, 1);
-    }
-}
+// void lcd1602_print(u8 *pStr)     
+// {
+// 	u8 x = 0;
+//     lcd1602_set_cursor(x, 0);      
+//     while (*pStr != '\0')
+//     {
+//         lcd1602_write_data(*pStr++);
+// 			if(x++ == 15)
+// 				lcd1602_set_cursor(0, 1);
+//     }
+// }
 
 
 static void delay5ms(void)   
