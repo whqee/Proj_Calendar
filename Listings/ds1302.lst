@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-C51 COMPILER V9.59.0.0   DS1302                                                            03/31/2019 13:56:50 PAGE 1   
-=======
-C51 COMPILER V9.59.0.0   DS1302                                                            04/01/2019 20:28:31 PAGE 1   
->>>>>>> dev
+C51 COMPILER V9.59.0.0   DS1302                                                            04/01/2019 21:26:52 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE DS1302
@@ -64,17 +60,9 @@ line level    source
   46   1        ds1302_write_reg(0x8e, 0x80); //Enable WP to disable write access
   47   1      }
   48          
-<<<<<<< HEAD
-  49          static u8 ds1302_read_reg(u8 addr)
-  50          {
-  51   1        u8 i = 0, dat = 0, dat1 = 0;
-  52   1      
-C51 COMPILER V9.59.0.0   DS1302                                                            03/31/2019 13:56:50 PAGE 2   
-=======
   49          /** External Interface definitions end  **/
   50          
-C51 COMPILER V9.59.0.0   DS1302                                                            04/01/2019 20:28:31 PAGE 2   
->>>>>>> dev
+C51 COMPILER V9.59.0.0   DS1302                                                            04/01/2019 21:26:52 PAGE 2   
 
   51          
   52          
@@ -108,41 +96,6 @@ line level    source
   80   2          SCLK = 0;         // Pull-down for next action
   81   2          _nop_();
   82   2        }
-<<<<<<< HEAD
-  83   1      
-  84   1        RST = 0;
-  85   1        _nop_();  //Below: neccessary to stabilise ds1302
-  86   1      
-  87   1        SCLK = 1;
-  88   1        _nop_();
-  89   1      
-  90   1        IO = 0;
-  91   1        _nop_();
-  92   1      
-  93   1        IO = 1;
-  94   1        _nop_();
-  95   1      
-  96   1        return dat; 
-  97   1      }
-  98          
-  99          
- 100          static void ds1302_write_reg(u8 addr, u8 dat)
- 101          {
- 102   1        u8 i = 0;
- 103   1      
- 104   1        RST = 0;
- 105   1        _nop_();        
- 106   1      
- 107   1        SCLK = 0;       
- 108   1        _nop_();
- 109   1      
- 110   1        RST = 1;        
- 111   1        _nop_();
- 112   1      
- 113   1        for (i=0; i<8; i++)   //write addr
- 114   1        {
-C51 COMPILER V9.59.0.0   DS1302                                                            03/31/2019 13:56:50 PAGE 3   
-=======
   83   1        
   84   1        for (i=0; i<8; i++)       // read 8bit
   85   1        {
@@ -173,8 +126,7 @@ line level    source
  110          static void ds1302_write_reg(u8 addr, u8 dat)
  111          {
  112   1        u8 i = 0;
-C51 COMPILER V9.59.0.0   DS1302                                                            04/01/2019 20:28:31 PAGE 3   
->>>>>>> dev
+C51 COMPILER V9.59.0.0   DS1302                                                            04/01/2019 21:26:52 PAGE 3   
 
  113   1      
  114   1        RST = 0;

@@ -1,12 +1,9 @@
 #include <common.h>
 #include <lcd1602.h>
 #include <ds1302.h>
-<<<<<<< HEAD
-=======
 
 #define BCD_TO_BIN(val)   ( (((val) >> 4) * 10) +  ((val)&15) )    // Applicable to 8 'bit data length
 #define BIN_TO_BCD(val)   ( (((val)/10) << 4) + (((val)%10)) )	   // Applicable to 8 'bit data length
->>>>>>> dev
 
 sbit KEY0 = P3^2;
 sbit KEY1 = P3^3;
@@ -46,10 +43,7 @@ void main()
 			goto Set_Time;
 		
 		ds1302_read_time(time_now);
-<<<<<<< HEAD
-=======
 		check_time();
->>>>>>> dev
 		print_time();
 	}
 	while(1)

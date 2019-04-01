@@ -1,4 +1,4 @@
-C51 COMPILER V9.59.0.0   LCD1602                                                           04/01/2019 20:31:04 PAGE 1   
+C51 COMPILER V9.59.0.0   LCD1602                                                           04/01/2019 21:26:52 PAGE 1   
 
 
 C51 COMPILER V9.59.0.0, COMPILATION OF MODULE LCD1602
@@ -62,7 +62,7 @@ line level    source
   52   1        lcd1602_E = 1;              
   53   1        lcd1602_E = 0;        
   54   1      }
-C51 COMPILER V9.59.0.0   LCD1602                                                           04/01/2019 20:31:04 PAGE 2   
+C51 COMPILER V9.59.0.0   LCD1602                                                           04/01/2019 21:26:52 PAGE 2   
 
   55          
   56          void lcd1602_Init(void)           
@@ -126,7 +126,7 @@ line level    source
  114   1          unsigned char a,b;
  115   1          for(b=19;b>0;b--)
  116   1              for(a=130;a>0;a--);
-C51 COMPILER V9.59.0.0   LCD1602                                                           04/01/2019 20:31:04 PAGE 3   
+C51 COMPILER V9.59.0.0   LCD1602                                                           04/01/2019 21:26:52 PAGE 3   
 
  117   1      }  
  118          
